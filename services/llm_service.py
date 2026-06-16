@@ -25,7 +25,7 @@ class LLMService:
 
         prompt = (
             "Ты — помощник, который делает краткие и емкие саммари для дайджеста. "
-            "Прочитай текст ниже и напиши краткое резюме на русском языке (2-3 предложения). "
+            "Прочитай текст ниже и напиши содержательное резюме на русском языке. "
             "Выдели самую суть. Не используй вводные фразы типа 'В данном тексте говорится...'. "
             "Пиши сразу по делу.\n\n"
             f"ТЕКСТ:\n{truncated_text}"
@@ -33,12 +33,13 @@ class LLMService:
 
         try:
             response = await self.client.chat.completions.create(
-                model=self.model_name,
+                model=self.model_name, 
                 messages=[
                     {"role": "system", "content": "You are a helpful assistant that summarizes text in Russian."},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.3,
+                temperature=0.5,
+                max_tokens=500
             )
             return response.choices[0].message.content.strip()
         except Exception as e:
