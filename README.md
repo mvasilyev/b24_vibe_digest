@@ -1,33 +1,33 @@
 # 📝 TG Digest Bot
 
-Personal Telegram bot for content curation. Send links or forward messages, and get a clean, AI-powered daily digest.
+Персональный Telegram-бот для кураторства контента. Присылайте ссылки или пересылайте сообщения, а бот соберет для вас чистый ежедневный дайджест с умными саммари от ИИ.
 
-## ✨ Features
+## ✨ Возможности
 
-- 🔗 **Smart Link Scraping**: Automatically extracts titles and content from articles and websites, stripping away ads and junk.
-- 🧠 **AI-Powered Summaries**: Uses LLM to transform long articles or forwarded messages into concise, readable summaries.
-- 📅 **Scheduled Digests**: Get your curated content delivered at a specific time every day.
-- ⚡ **Instant Digest**: Use the `/digest` command to get your accumulated summary immediately.
-- 🛠 **Fully Configurable**: Control everything (model, API, schedule) via a simple `.env` file.
+- 🔗 **Умный скрапинг ссылок**: Бот автоматически извлекает заголовки и текст из статей, очищая их от рекламы и лишнего мусора.
+- 🧠 **Саммари от ИИ**: Использует языковые модели (LLM) для создания кратких и содержательных резюме из длинных статей или пересланных сообщений.
+- 📅 **Ежедневные дайджесты**: Получайте подборку накопленного контента в удобное для вас время каждый день.
+- ⚡ **Мгновенный дайджест**: Используйте команду `/digest`, чтобы получить текущий отчет прямо сейчас.
+- 🛠 **Полная гибкость**: Настраивайте всё (модель, API, время рассылки) через простой файл `.env`.
 
-## 🛠 Tech Stack
+## 🛠 Технологический стек
 
-- **Language**: Python 3.10+
-- **Bot Framework**: [aiogram 3.x](https://docs.aiogram.dev/) (Asynchronous)
-- **Database**: [SQLite](https://www.sqlite.org/) with [SQLAlchemy 2.0](https://docs.sqlalchemy.org/) (Async)
-- **Task Scheduling**: [APScheduler](https://apscheduler.readthedocs.io/)
-- **Scraping**: [trafilatura](https://trafilatura.readthedocs.io/) & [httpx](https://www.python-httpx.org/)
-- **LLM Integration**: OpenAI-compatible API (works with OpenAI, DeepSeek, Ollama, etc.)
+- **Язык**: [Python 3.10+](https://www.python.org/)
+- **Фреймворк бота**: [aiogram 3.x](https://docs.aiogram.dev/) (асинхронный)
+- **База данных**: [SQLite](https://www.sqlite.org/) с использованием [SQLAlchemy 2.0](https://docs.sqlalchemy.org/) (асинхронная)
+- **Планировщик задач**: [APScheduler](https://apscheduler.readthedocs.io/)
+- **Скрапинг**: [trafilatura](https://trafilatura.readthedocs.io/) и [httpx](https://www.python-httpx.org/)
+- **Интеграция с LLM**: OpenAI-совместимый API (работает с OpenAI, DeepSeek, Ollama и др.)
 
-## 🚀 Setup & Installation
+## 🚀 Установка и запуск
 
-### 1. Clone the repository
+### 1. Клонируйте репозиторий
 ```bash
-git clone <repository-url>
+git clone <url_репозитория>
 cd tg_digest_bot
 ```
 
-### 2. Create and activate a virtual environment
+### 2. Создайте и активируйте виртуальное окружение
 **macOS / Linux:**
 ```bash
 python3 -m venv venv
@@ -40,37 +40,37 @@ python -m venv venv
 venv\Scripts\activate
 ```
 
-### 3. Install dependencies
+### 3. Установите зависимости
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Configuration
-Create a `.env` file in the `tg_digest_bot/` directory based on the template:
+### 4. Настройка
+Создайте файл `.env` в директории `tg_digest_bot/` на основе шаблона:
 ```bash
 cp .env.example .env
 ```
 
-Edit the `.env` file with your credentials:
-- `BOT_TOKEN`: Your Telegram Bot Token from [@BotFather](https://t.me/botfather).
-- `LLM_API_KEY`: Your API key for the LLM provider.
-- `LLM_BASE_URL`: The API endpoint (e.g., `https://api.openai.com/v1` or `http://localhost:11434/v1` for Ollama).
-- `LLM_MODEL_NAME`: The model you want to use (e.g., `gpt-4o-mini`, `deepseek-chat`, `llama3`).
-- `DIGEST_TIME`: The time for the daily digest in `HH:MM` format (e.g., `09:00`).
+Отредактируйте `.env`, вписав свои данные:
+- `BOT_TOKEN`: Токен вашего бота от [@BotFather](https://t.me/botfather).
+- `LLM_API_KEY`: Ваш API ключ от провайдера LLM.
+- `LLM_BASE_URL`: Адрес API (например, `https://api.openai.com/v1` или `http://localhost:11434/v1` для Ollama).
+- `LLM_MODEL_NAME`: Модель, которую вы хотите использовать (например, `gpt-4o-mini`, `deepseek-chat`, `llama3`).
+- `DIGEST_TIME`: Время отправки дайджеста в формате `HH:MM` (например, `09:00`).
 
-## 🕹 Usage
+## 🕹 Использование
 
-1. **Start the bot**:
+1. **Запустите бота**:
    ```bash
    python main.py
    ```
-2. **Add content**: 
-   - Send a URL (e.g., `https://example.com/article`).
-   - Forward a message from any Telegram channel.
-3. **Get your digest**:
-   - Wait for the scheduled time.
-   - Or type `/digest` to get it immediately.
+2. **Добавляйте контент**: 
+   - Отправьте ссылку (например, `https://example.com/article`).
+   - Перешлите сообщение из любого Telegram-канала.
+3. **Получите дайджест**:
+   - Дождитесь запланированного времени.
+   - Или введите команду `/digest`, чтобы получить отчет мгновенно.
 
-## 📝 License
+## 📝 Лицензия
 
 MIT
