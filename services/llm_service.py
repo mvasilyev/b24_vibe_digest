@@ -12,6 +12,7 @@ class LLMService:
             api_key=os.getenv("LLM_API_KEY"),
             base_url=os.getenv("LLM_BASE_URL")
         )
+        self.model_name = os.getenv("LLM_MODEL_NAME", "gpt-4o-mini")
 
     async def summarize(self, text: str) -> str:
         """
@@ -32,7 +33,7 @@ class LLMService:
 
         try:
             response = await self.client.chat.completions.create(
-                model="gpt-4o-mini", 
+                model=self.model_name,
                 messages=[
                     {"role": "system", "content": "You are a helpful assistant that summarizes text in Russian."},
                     {"role": "user", "content": prompt}
