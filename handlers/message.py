@@ -15,14 +15,11 @@ router = Router()
 # Регулярка для поиска URL
 URL_PATTERN = re.compile(r'https?://\S+')
 
-async def process_content_task(user_id: int, item_id: int, url: str, scraper: ScraperService, llm: LLMService):
+async def process_content_task(user_id: int, item_id: int, content_type: str, content_value: str, scraper: ScraperService, llm: LLMService):
     """
-    Фоновая задача для обработки ссылки: скрапинг -> саммари -> обновление БД.
+    Фоновая задача для обработки контента: скрапинг (если URL) -> саммари -> обновление БД.
     """
-    logger.info(f"Starting background processing for item {item_id} (user {user_id})")
-    
-    # 1. Скрапинг
-    scraped_data = await scraper.scrape_url(url)
+    logger.info(f"Starting background processing for item {item_id} (user {user_id}, type: {content_type})")
     
     async with AsyncSessionLocal() as session:
         async with session.begin():
@@ -35,14 +32,17 @@ async def process_content_task(user_id: int, item_id: int, url: str, scraper: Sc
                 logger.error(f"Item {item_id} not found in DB during background task")
                 return
 
-            if scraped_data:
-                item.extracted_text = scraped_data.get("text")
-                item.title = scraped_data.get("title")
-                
-                # 2. LLM Summary
-                if item.extracted_text:
-                    summary = await llm.summarize(item.extracted_text)
-                    item.summary = summary
+            # 1. Если это URL — скрапим
+            if content_type == "url":
+                scraped_data = await scraper.scrape_url(content_value)
+                if scraped_data:
+                    item.extracted_text = scraped_data.get("text")
+                    item.title = scraped_data.get("title")
+            
+            # 2. Делаем саммари на основе извлеченного текста или оригинального контента
+            text_to_summarize = item.extracted_text or item.original_content
+            if text_to_summarize:
+                item.summary = await llm.summarize(text_to_summarize)
             
             item.is_processed = True
         
@@ -68,7 +68,6 @@ async def handle_message(message: types.Message, scraper: ScraperService, llm: L
         async with session.begin():
             if urls:
                 # Если нашли URL, создаем запись типа 'url'
-                # Берем первый найденный URL для простоты
                 url = urls[0]
                 new_item = ContentItem(
                     user_id=user_id,
@@ -82,7 +81,7 @@ async def handle_message(message: types.Message, scraper: ScraperService, llm: L
                 await message.answer("🔗 Ссылка получена! Я изучу её и добавлю в дайджест.")
                 
                 # Запускаем фоновую обработку
-                asyncio.create_task(process_content_task(user_id, item_id, url, scraper, llm))
+                asyncio.create_task(process_content_task(user_id, item_id, "url", url, scraper, llm))
             else:
                 # Если это просто текст (или форвард сообщения без ссылок)
                 new_item = ContentItem(
@@ -91,4 +90,10 @@ async def handle_message(message: types.Message, scraper: ScraperService, llm: L
                     original_content=text
                 )
                 session.add(new_item)
+                await session.flush() # Чтобы получить item.id
+                item_id = new_item.id
+                
                 await message.answer("📝 Текст сохранен. Добавлю в дайджест.")
+                
+                # Запускаем фоновую обработку для текста (чтобы сделать саммари)
+                asyncio.create_task(process_content_task(user_id, item_id, "text", text, scraper, llm))

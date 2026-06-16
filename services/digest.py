@@ -38,8 +38,17 @@ class DigestService:
                     digest_text += f"🔗 [{title}]({item.original_content})\n"
                     digest_text += f"_{summary}_\n\n"
                 else:
-                    # Обычный текст
-                    digest_text += f"📝 *Сообщение:*\n_{item.original_content}_\n\n"
+                    # Обычный текст: показываем саммари + оригинальный текст (truncated)
+                    summary = item.summary if item.summary else "Нет описания."
+                    digest_text += f"📝 *Сообщение:*\n_{summary}_\n"
+                    
+                    # Добавляем сам текст, если он не слишком длинный
+                    if item.original_content:
+                        text_preview = item.original_content[:300] # Берем первые 300 символов
+                        if len(item.original_content) > 300:
+                            text_preview += "..."
+                        digest_text += f"> {text_preview}\n"
+                    digest_text += "\n"
                 
                 # Помечаем как отправленное
                 item.is_sent_in_digest = True
