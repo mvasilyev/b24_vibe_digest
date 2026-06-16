@@ -33,15 +33,24 @@ class LLMService:
 
         try:
             response = await self.client.chat.completions.create(
-                model=self.model_name, 
+                model=self.model_name,
                 messages=[
                     {"role": "system", "content": "You are a helpful assistant that summarizes text in Russian."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.5,
-                max_tokens=500
+                # Модель reasoning-типа тратит часть бюджета на reasoning_content,
+                # поэтому лимит должен покрывать и рассуждения, и сам ответ.
+                max_tokens=4000
             )
-            return response.choices[0].message.content.strip()
+            choice = response.choices[0]
+            content = choice.message.content
+            if not content:
+                logger.error(
+                    f"LLM returned empty content (finish_reason={choice.finish_reason})"
+                )
+                return "Не удалось создать саммари."
+            return content.strip()
         except Exception as e:
             logger.exception(f"LLM Error: {e}")
             return "Не удалось создать саммари."
